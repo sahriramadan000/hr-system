@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR System — Manajemen Karyawan</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f13;
+    --bg2: #16161d;
+    --bg3: #1e1e28;
+    --bg4: #26263a;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f0f5;
+    --text2: #8b8ba0;
+    --text3: #5a5a70;
+    --accent: #7c6af5;
+    --accent2: #9d8ffa;
+    --accent-bg: rgba(124,106,245,0.12);
+    --green: #3ecf8e;
+    --green-bg: rgba(62,207,142,0.12);
+    --red: #f56b6b;
+    --red-bg: rgba(245,107,107,0.12);
+    --amber: #f5a623;
+    --amber-bg: rgba(245,166,35,0.12);
+    --blue: #5b9cf6;
+    --blue-bg: rgba(91,156,246,0.12);
+    --teal: #4dd4ac;
+    --teal-bg: rgba(77,212,172,0.12);
+    --pink: #f06292;
+    --pink-bg: rgba(240,98,146,0.12);
+    --radius: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; }
+
+  /* SIDEBAR */
+  .sidebar { width:220px; min-height:100vh; background:var(--bg2); border-right:1px solid var(--border); display:flex; flex-direction:column; position:fixed; top:0; left:0; z-index:100; }
+  .sidebar-logo { padding:20px 20px 16px; border-bottom:1px solid var(--border); }
+  .logo-mark { display:flex; align-items:center; gap:10px; }
+  .logo-icon { width:32px; height:32px; background:var(--accent); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#fff; }
+  .logo-text { font-size:15px; font-weight:700; letter-spacing:-0.3px; }
+  .logo-sub { font-size:10px; color:var(--text3); letter-spacing:1px; text-transform:uppercase; margin-top:1px; }
+  .sidebar-nav { padding:12px 0; flex:1; }
+  .nav-section { padding:6px 16px 4px; font-size:10px; color:var(--text3); letter-spacing:1.2px; text-transform:uppercase; font-weight:500; }
+  .nav-item { display:flex; align-items:center; gap:10px; padding:8px 16px; cursor:pointer; transition:all .15s; border-radius:0; font-size:13.5px; color:var(--text2); font-weight:500; margin:1px 8px; border-radius:8px; }
+  .nav-item:hover { background:var(--bg3); color:var(--text); }
+  .nav-item.active { background:var(--accent-bg); color:var(--accent2); }
+  .nav-icon { width:16px; height:16px; opacity:.7; flex-shrink:0; }
+  .nav-item.active .nav-icon { opacity:1; }
+  .sidebar-user { padding:14px 16px; border-top:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+  .user-avatar { width:32px; height:32px; background:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; flex-shrink:0; }
+  .user-name { font-size:12.5px; font-weight:600; }
+  .user-role { font-size:11px; color:var(--text3); }
+
+  /* MAIN */
+  .main { margin-left:220px; flex:1; min-height:100vh; }
+  .topbar { height:56px; background:var(--bg2); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 24px; gap:16px; position:sticky; top:0; z-index:90; }
+  .topbar-title { font-size:15px; font-weight:700; flex:1; }
+  .topbar-actions { display:flex; gap:8px; align-items:center; }
+  .btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:var(--radius); font-size:13px; font-weight:600; cursor:pointer; transition:all .15s; border:none; font-family:inherit; }
+  .btn-primary { background:var(--accent); color:#fff; }
+  .btn-primary:hover { background:var(--accent2); }
+  .btn-ghost { background:var(--bg3); color:var(--text2); border:1px solid var(--border2); }
+  .btn-ghost:hover { color:var(--text); border-color:var(--border2); background:var(--bg4); }
+  .btn-danger { background:var(--red-bg); color:var(--red); border:1px solid rgba(245,107,107,0.2); }
+  .btn-danger:hover { background:rgba(245,107,107,0.2); }
+  .btn-success { background:var(--green-bg); color:var(--green); border:1px solid rgba(62,207,142,0.2); }
+  .btn-sm { padding:5px 10px; font-size:12px; }
+  .content { padding:24px; }
+
+  /* PAGES */
+  .page { display:none; }
+  .page.active { display:block; }
+
+  /* STATS GRID */
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+  .stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px 20px; }
+  .stat-label { font-size:12px; color:var(--text3); font-weight:500; letter-spacing:.3px; margin-bottom:8px; }
+  .stat-val { font-size:26px; font-weight:700; letter-spacing:-1px; }
+  .stat-change { font-size:11.5px; margin-top:4px; }
+  .stat-change.pos { color:var(--green); }
+  .stat-change.neg { color:var(--red); }
+
+  /* TABLE */
+  .table-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+  .table-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border); }
+  .table-title { font-size:14px; font-weight:700; }
+  .search-input { background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:7px 12px 7px 34px; font-size:13px; color:var(--text); font-family:inherit; outline:none; width:200px; position:relative; }
+  .search-input:focus { border-color:var(--accent); }
+  .search-wrap { position:relative; }
+  .search-wrap::before { content:''; position:absolute; left:11px; top:50%; transform:translateY(-50%); width:14px; height:14px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b8ba0' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E"); background-size:14px; }
+  table { width:100%; border-collapse:collapse; }
+  th { text-align:left; padding:10px 20px; font-size:11.5px; color:var(--text3); font-weight:600; letter-spacing:.5px; text-transform:uppercase; background:var(--bg3); border-bottom:1px solid var(--border); }
+  td { padding:13px 20px; font-size:13.5px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:rgba(255,255,255,0.02); }
+  .badge { display:inline-flex; align-items:center; padding:3px 9px; border-radius:20px; font-size:11.5px; font-weight:600; }
+  .badge-green { background:var(--green-bg); color:var(--green); }
+  .badge-red { background:var(--red-bg); color:var(--red); }
+  .badge-amber { background:var(--amber-bg); color:var(--amber); }
+  .badge-blue { background:var(--blue-bg); color:var(--blue); }
+  .badge-teal { background:var(--teal-bg); color:var(--teal); }
+  .badge-pink { background:var(--pink-bg); color:var(--pink); }
+  .badge-gray { background:var(--bg4); color:var(--text2); }
+  .badge-purple { background:var(--accent-bg); color:var(--accent2); }
+  .actions { display:flex; gap:6px; }
+
+  /* MODAL */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--bg2); border:1px solid var(--border2); border-radius:var(--radius-xl); padding:28px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; box-shadow:var(--shadow); animation:modalIn .2s ease; }
+  .modal-lg { max-width:600px; }
+  @keyframes modalIn { from{opacity:0;transform:scale(.95) translateY(8px)} to{opacity:1;transform:none} }
+  .modal-title { font-size:16px; font-weight:700; margin-bottom:4px; }
+  .modal-sub { font-size:13px; color:var(--text3); margin-bottom:20px; }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .form-group { display:flex; flex-direction:column; gap:5px; }
+  .form-group.full { grid-column:1/-1; }
+  label { font-size:12px; color:var(--text2); font-weight:500; }
+  input, select, textarea { background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:8px 12px; font-size:13px; color:var(--text); font-family:inherit; outline:none; transition:border .15s; }
+  input:focus, select:focus, textarea:focus { border-color:var(--accent); }
+  select option { background:var(--bg3); }
+  textarea { resize:vertical; min-height:80px; }
+  .form-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:20px; padding-top:16px; border-top:1px solid var(--border); }
+
+  /* ABSEN / CLOCK */
+  .clock-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-xl); padding:28px; text-align:center; margin-bottom:20px; }
+  .clock-time { font-family:'DM Mono',monospace; font-size:52px; font-weight:500; letter-spacing:-2px; color:var(--text); margin-bottom:4px; }
+  .clock-date { font-size:14px; color:var(--text2); margin-bottom:24px; }
+  .clock-actions { display:flex; gap:12px; justify-content:center; }
+  .btn-clock { padding:12px 32px; font-size:15px; border-radius:var(--radius-lg); font-weight:700; border:none; cursor:pointer; font-family:inherit; transition:all .15s; }
+  .btn-in { background:var(--green); color:#0a1f15; }
+  .btn-in:hover { background:#5ce0a9; }
+  .btn-out { background:var(--red); color:#1f0a0a; }
+  .btn-out:hover { background:#f88; }
+  .btn-disabled { background:var(--bg4); color:var(--text3); cursor:not-allowed; }
+  .today-status { background:var(--bg3); border-radius:var(--radius); padding:14px 18px; display:flex; gap:24px; justify-content:center; margin-bottom:20px; }
+  .status-item { text-align:center; }
+  .status-item .val { font-family:'DM Mono',monospace; font-size:18px; font-weight:500; color:var(--text); }
+  .status-item .lbl { font-size:11px; color:var(--text3); margin-top:2px; }
+
+  /* PAYROLL */
+  .payroll-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-xl); padding:24px; }
+  .payroll-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; }
+  .pay-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+  .pay-item { background:var(--bg3); border-radius:var(--radius); padding:14px; }
+  .pay-lbl { font-size:11px; color:var(--text3); margin-bottom:4px; }
+  .pay-val { font-size:17px; font-weight:700; font-family:'DM Mono',monospace; }
+  .pay-val.green { color:var(--green); }
+  .pay-val.red { color:var(--red); }
+
+  /* TOAST */
+  .toast-container { position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+  .toast { background:var(--bg3); border:1px solid var(--border2); border-radius:10px; padding:12px 16px; font-size:13px; font-weight:500; display:flex; align-items:center; gap:10px; min-width:240px; animation:toastIn .2s ease; box-shadow:var(--shadow); }
+  .toast.success { border-color:rgba(62,207,142,0.3); }
+  .toast.error { border-color:rgba(245,107,107,0.3); }
+  @keyframes toastIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+  .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .dot-green { background:var(--green); }
+  .dot-red { background:var(--red); }
+  .dot-amber { background:var(--amber); }
+
+  /* CONFIRM */
+  .confirm-modal { max-width:360px; text-align:center; }
+  .confirm-icon { width:48px; height:48px; border-radius:50%; background:var(--red-bg); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; }
+
+  /* TABS */
+  .tabs { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:20px; }
+  .tab { padding:10px 16px; font-size:13px; font-weight:600; cursor:pointer; color:var(--text2); border-bottom:2px solid transparent; transition:all .15s; }
+  .tab:hover { color:var(--text); }
+  .tab.active { color:var(--accent2); border-bottom-color:var(--accent); }
+
+  /* EMPTY STATE */
+  .empty { text-align:center; padding:48px 24px; }
+  .empty-icon { font-size:36px; margin-bottom:12px; opacity:.3; }
+  .empty-text { font-size:14px; color:var(--text3); }
+
+  /* FILTER ROW */
+  .filter-row { display:flex; gap:10px; align-items:center; padding:12px 20px; border-bottom:1px solid var(--border); background:var(--bg2); flex-wrap:wrap; }
+  .filter-select { background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:6px 10px; font-size:12.5px; color:var(--text); font-family:inherit; outline:none; cursor:pointer; }
+
+  /* AVATAR */
+  .av { width:30px; height:30px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
+
+  /* OVERTIME CARD */
+  .ot-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px; }
+  .section-title { font-size:13px; font-weight:700; margin-bottom:12px; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; }
+  
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .col-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; }
+
+  /* REIMBURSE */
+  .receipt-card { background:var(--bg3); border-radius:var(--radius); padding:14px; display:flex; gap:12px; align-items:flex-start; }
+  .receipt-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+
+  /* CHART BAR */
+  .bar-chart { display:flex; gap:8px; align-items:flex-end; height:120px; margin-top:16px; }
+  .bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .bar { width:100%; border-radius:4px 4px 0 0; transition:height .3s; }
+  .bar-lbl { font-size:10px; color:var(--text3); }
+  .bar-val { font-size:10px; color:var(--text2); font-family:'DM Mono',monospace; }
+
+  @media (max-width:900px) {
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+    .form-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">HR</div>
+      <div>
+        <div class="logo-text">WorkSphere</div>
+        <div class="logo-sub">HR System</div>
+      </div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Utama</div>
+    <div class="nav-item active" data-page="dashboard">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" data-page="absen">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Absensi
+    </div>
+    <div class="nav-item" data-page="inout">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+      In &amp; Out
+    </div>
+    <div class="nav-section">Pengajuan</div>
+    <div class="nav-item" data-page="cuti">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Cuti
+    </div>
+    <div class="nav-item" data-page="ops">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      Pengajuan Ops
+    </div>
+    <div class="nav-item" data-page="reimburse">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Reimburse
+    </div>
+    <div class="nav-section">Keuangan</div>
+    <div class="nav-item" data-page="payroll">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      Payroll
+    </div>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar">AD</div>
+    <div>
+      <div class="user-name">Admin HR</div>
+      <div class="user-role">Administrator</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost btn-sm" id="topbar-add-btn" style="display:none"></button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Karyawan</div>
+          <div class="stat-val" style="color:var(--accent2)" id="stat-emp">0</div>
+          <div class="stat-change pos">Aktif bulan ini</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Hadir Hari Ini</div>
+          <div class="stat-val" style="color:var(--green)" id="stat-hadir">0</div>
+          <div class="stat-change pos" id="stat-hadir-pct">dari total karyawan</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Cuti Aktif</div>
+          <div class="stat-val" style="color:var(--amber)" id="stat-cuti">0</div>
+          <div class="stat-change">Menunggu &amp; Disetujui</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pengajuan Ops</div>
+          <div class="stat-val" style="color:var(--blue)" id="stat-ops">0</div>
+          <div class="stat-change" id="stat-ops-sub">Total pengajuan</div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="col-card">
+          <div class="section-title">Absensi 7 Hari Terakhir</div>
+          <div class="bar-chart" id="absen-chart"></div>
+          <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
+            <span style="font-size:11px;color:var(--text3)"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--green);margin-right:4px;vertical-align:middle"></span>Hadir</span>
+            <span style="font-size:11px;color:var(--text3)"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--red);margin-right:4px;vertical-align:middle"></span>Absen</span>
+          </div>
+        </div>
+        <div class="col-card">
+          <div class="section-title">Aktivitas Terbaru</div>
+          <div id="activity-feed" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ABSENSI ===== -->
+    <div class="page" id="page-absen">
+      <div class="clock-card">
+        <div class="clock-time" id="clock-display">00:00:00</div>
+        <div class="clock-date" id="clock-date-display">—</div>
+        <div class="today-status">
+          <div class="status-item"><div class="val" id="absen-in-time">—</div><div class="lbl">Check In</div></div>
+          <div class="status-item"><div class="val" id="absen-out-time">—</div><div class="lbl">Check Out</div></div>
+          <div class="status-item"><div class="val" id="absen-duration">—</div><div class="lbl">Durasi Kerja</div></div>
+        </div>
+        <div class="clock-actions">
+          <button class="btn-clock btn-in" id="btn-check-in" onclick="checkIn()">Check In</button>
+          <button class="btn-clock btn-out btn-disabled" id="btn-check-out" onclick="checkOut()">Check Out</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Riwayat Absensi</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div class="search-wrap"><input class="search-input" placeholder="Cari nama..." oninput="filterTable('absen-table',this.value)"></div>
+            <select class="filter-select" onchange="filterAbsenMonth(this.value)">
+              <option value="">Semua Bulan</option>
+              <option value="2025-01">Jan 2025</option><option value="2025-02">Feb 2025</option>
+              <option value="2025-03">Mar 2025</option><option value="2025-04">Apr 2025</option>
+              <option value="2025-05">Mei 2025</option><option value="2025-06">Jun 2025</option>
+              <option value="2025-07">Jul 2025</option>
+            </select>
+          </div>
+        </div>
+        <table id="absen-table">
+          <thead><tr><th>Tanggal</th><th>Nama</th><th>Check In</th><th>Check Out</th><th>Durasi</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="absen-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== IN OUT ===== -->
+    <div class="page" id="page-inout">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card">
+          <div class="stat-label">Total Check In Hari Ini</div>
+          <div class="stat-val" style="color:var(--green)" id="io-in-count">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Check Out Hari Ini</div>
+          <div class="stat-val" style="color:var(--red)" id="io-out-count">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Masih di Kantor</div>
+          <div class="stat-val" style="color:var(--amber)" id="io-still-count">0</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Log In &amp; Out</div>
+          <div style="display:flex;gap:8px">
+            <div class="search-wrap"><input class="search-input" placeholder="Cari nama..." oninput="filterTable('inout-table',this.value)"></div>
+            <button class="btn btn-primary" onclick="openModal('modal-inout')">+ Tambah Log</button>
+          </div>
+        </div>
+        <table id="inout-table">
+          <thead><tr><th>Tanggal</th><th>Nama</th><th>Departemen</th><th>Check In</th><th>Check Out</th><th>Lokasi</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="inout-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== CUTI ===== -->
+    <div class="page" id="page-cuti">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card"><div class="stat-label">Menunggu Persetujuan</div><div class="stat-val" style="color:var(--amber)" id="cuti-pending">0</div></div>
+        <div class="stat-card"><div class="stat-label">Disetujui</div><div class="stat-val" style="color:var(--green)" id="cuti-approved">0</div></div>
+        <div class="stat-card"><div class="stat-label">Ditolak</div><div class="stat-val" style="color:var(--red)" id="cuti-rejected">0</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Daftar Pengajuan Cuti</div>
+          <div style="display:flex;gap:8px">
+            <div class="search-wrap"><input class="search-input" placeholder="Cari nama..." oninput="filterTable('cuti-table',this.value)"></div>
+            <button class="btn btn-primary" onclick="openModal('modal-cuti')">+ Ajukan Cuti</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <span style="font-size:12px;color:var(--text3)">Filter:</span>
+          <select class="filter-select" onchange="filterCutiStatus(this.value)">
+            <option value="">Semua Status</option>
+            <option value="Menunggu">Menunggu</option>
+            <option value="Disetujui">Disetujui</option>
+            <option value="Ditolak">Ditolak</option>
+          </select>
+          <select class="filter-select" onchange="filterCutiType(this.value)">
+            <option value="">Semua Jenis</option>
+            <option value="Tahunan">Tahunan</option>
+            <option value="Sakit">Sakit</option>
+            <option value="Darurat">Darurat</option>
+            <option value="Melahirkan">Melahirkan</option>
+          </select>
+        </div>
+        <table id="cuti-table">
+          <thead><tr><th>Karyawan</th><th>Jenis Cuti</th><th>Mulai</th><th>Selesai</th><th>Durasi</th><th>Alasan</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="cuti-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== PENGAJUAN OPS ===== -->
+    <div class="page" id="page-ops">
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card"><div class="stat-label">Total Pengajuan</div><div class="stat-val" style="color:var(--accent2)" id="ops-total">0</div></div>
+        <div class="stat-card"><div class="stat-label">Menunggu</div><div class="stat-val" style="color:var(--amber)" id="ops-pending">0</div></div>
+        <div class="stat-card"><div class="stat-label">Disetujui</div><div class="stat-val" style="color:var(--green)" id="ops-approved">0</div></div>
+        <div class="stat-card"><div class="stat-label">Total Nilai</div><div class="stat-val" style="color:var(--blue)" id="ops-value">0</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Daftar Pengajuan Operasional</div>
+          <div style="display:flex;gap:8px">
+            <div class="search-wrap"><input class="search-input" placeholder="Cari..." oninput="filterTable('ops-table',this.value)"></div>
+            <button class="btn btn-primary" onclick="openModal('modal-ops')">+ Buat Pengajuan</button>
+          </div>
+        </div>
+        <table id="ops-table">
+          <thead><tr><th>No. Pengajuan</th><th>Karyawan</th><th>Kategori</th><th>Deskripsi</th><th>Nilai</th><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="ops-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== REIMBURSE ===== -->
+    <div class="page" id="page-reimburse">
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card"><div class="stat-label">Total Klaim</div><div class="stat-val" style="color:var(--accent2)" id="rmb-total">0</div></div>
+        <div class="stat-card"><div class="stat-label">Menunggu</div><div class="stat-val" style="color:var(--amber)" id="rmb-pending">0</div></div>
+        <div class="stat-card"><div class="stat-label">Disetujui</div><div class="stat-val" style="color:var(--green)" id="rmb-approved">0</div></div>
+        <div class="stat-card"><div class="stat-label">Total Nilai</div><div class="stat-val" style="color:var(--teal)" id="rmb-value">0</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Klaim Reimburse</div>
+          <div style="display:flex;gap:8px">
+            <div class="search-wrap"><input class="search-input" placeholder="Cari..." oninput="filterTable('rmb-table',this.value)"></div>
+            <button class="btn btn-primary" onclick="openModal('modal-reimburse')">+ Klaim Baru</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <span style="font-size:12px;color:var(--text3)">Filter:</span>
+          <select class="filter-select" onchange="filterRmbStatus(this.value)">
+            <option value="">Semua Status</option>
+            <option value="Menunggu">Menunggu</option>
+            <option value="Disetujui">Disetujui</option>
+            <option value="Ditolak">Ditolak</option>
+          </select>
+          <select class="filter-select" onchange="filterRmbCategory(this.value)">
+            <option value="">Semua Kategori</option>
+            <option value="Transport">Transport</option>
+            <option value="Makan">Makan</option>
+            <option value="Akomodasi">Akomodasi</option>
+            <option value="Kesehatan">Kesehatan</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <table id="rmb-table">
+          <thead><tr><th>No. Klaim</th><th>Karyawan</th><th>Kategori</th><th>Keterangan</th><th>Nilai</th><th>Tanggal Klaim</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="rmb-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== PAYROLL ===== -->
+    <div class="page" id="page-payroll">
+      <div class="pay-summary">
+        <div class="pay-item"><div class="pay-lbl">Total Gaji Bruto</div><div class="pay-val green" id="pay-bruto">Rp 0</div></div>
+        <div class="pay-item"><div class="pay-lbl">Total Potongan</div><div class="pay-val red" id="pay-potongan">Rp 0</div></div>
+        <div class="pay-item"><div class="pay-lbl">Total Gaji Neto</div><div class="pay-val" id="pay-neto">Rp 0</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Data Payroll Karyawan</div>
+          <div style="display:flex;gap:8px">
+            <select class="filter-select" onchange="filterPayrollMonth(this.value)" id="payroll-month-filter">
+              <option value="2025-07">Juli 2025</option>
+              <option value="2025-06">Juni 2025</option>
+              <option value="2025-05">Mei 2025</option>
+            </select>
+            <div class="search-wrap"><input class="search-input" placeholder="Cari nama..." oninput="filterTable('payroll-table',this.value)"></div>
+            <button class="btn btn-primary" onclick="openModal('modal-payroll')">+ Tambah Data</button>
+          </div>
+        </div>
+        <table id="payroll-table">
+          <thead><tr><th>Karyawan</th><th>Departemen</th><th>Gaji Pokok</th><th>Tunjangan</th><th>Lembur</th><th>Potongan</th><th>Total Neto</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="payroll-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ===== MODALS ===== -->
+
+<!-- MODAL ABSEN EDIT -->
+<div class="modal-overlay" id="modal-absen-edit">
+  <div class="modal">
+    <div class="modal-title" id="absen-modal-title">Edit Data Absensi</div>
+    <div class="modal-sub">Ubah data absensi karyawan</div>
+    <input type="hidden" id="absen-edit-id">
+    <div class="form-grid">
+      <div class="form-group"><label>Nama Karyawan</label><input id="absen-edit-name" placeholder="Nama lengkap"></div>
+      <div class="form-group"><label>Tanggal</label><input type="date" id="absen-edit-date"></div>
+      <div class="form-group"><label>Check In</label><input type="time" id="absen-edit-in"></div>
+      <div class="form-group"><label>Check Out</label><input type="time" id="absen-edit-out"></div>
+      <div class="form-group full"><label>Status</label>
+        <select id="absen-edit-status">
+          <option>Hadir</option><option>Terlambat</option><option>Izin</option><option>Sakit</option><option>Alpha</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-absen-edit')">Batal</button>
+      <button class="btn btn-primary" onclick="saveAbsenEdit()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL IN OUT -->
+<div class="modal-overlay" id="modal-inout">
+  <div class="modal">
+    <div class="modal-title" id="inout-modal-title">Tambah Log In &amp; Out</div>
+    <div class="modal-sub">Catat data check in/out karyawan</div>
+    <input type="hidden" id="inout-edit-id">
+    <div class="form-grid">
+      <div class="form-group"><label>Nama Karyawan</label><input id="io-name" placeholder="Nama lengkap"></div>
+      <div class="form-group"><label>Departemen</label>
+        <select id="io-dept"><option>Engineering</option><option>Marketing</option><option>Finance</option><option>HR</option><option>Operations</option><option>Sales</option></select>
+      </div>
+      <div class="form-group"><label>Tanggal</label><input type="date" id="io-date"></div>
+      <div class="form-group"><label>Lokasi</label><input id="io-location" placeholder="Kantor / WFH / Luar Kota"></div>
+      <div class="form-group"><label>Check In</label><input type="time" id="io-in"></div>
+      <div class="form-group"><label>Check Out</label><input type="time" id="io-out"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-inout')">Batal</button>
+      <button class="btn btn-primary" onclick="saveInOut()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CUTI -->
+<div class="modal-overlay" id="modal-cuti">
+  <div class="modal">
+    <div class="modal-title" id="cuti-modal-title">Pengajuan Cuti</div>
+    <div class="modal-sub">Isi form pengajuan cuti karyawan</div>
+    <input type="hidden" id="cuti-edit-id">
+    <div class="form-grid">
+      <div class="form-group"><label>Nama Karyawan</label><input id="cuti-name" placeholder="Nama lengkap"></div>
+      <div class="form-group"><label>Jenis Cuti</label>
+        <select id="cuti-type"><option>Tahunan</option><option>Sakit</option><option>Darurat</option><option>Melahirkan</option><option>Duka</option></select>
+      </div>
+      <div class="form-group"><label>Tanggal Mulai</label><input type="date" id="cuti-start"></div>
+      <div class="form-group"><label>Tanggal Selesai</label><input type="date" id="cuti-end"></div>
+      <div class="form-group full"><label>Alasan / Keterangan</label><textarea id="cuti-reason" placeholder="Jelaskan alasan cuti..."></textarea></div>
+      <div class="form-group full"><label>Status</label>
+        <select id="cuti-status"><option>Menunggu</option><option>Disetujui</option><option>Ditolak</option></select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-cuti')">Batal</button>
+      <button class="btn btn-primary" onclick="saveCuti()">Ajukan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL OPS -->
+<div class="modal-overlay" id="modal-ops">
+  <div class="modal modal-lg">
+    <div class="modal-title" id="ops-modal-title">Pengajuan Operasional</div>
+    <div class="modal-sub">Buat pengajuan kebutuhan operasional</div>
+    <input type="hidden" id="ops-edit-id">
+    <div class="form-grid">
+      <div class="form-group"><label>Nama Karyawan</label><input id="ops-name" placeholder="Nama pemohon"></div>
+      <div class="form-group"><label>Departemen</label>
+        <select id="ops-dept"><option>Engineering</option><option>Marketing</option><option>Finance</option><option>HR</option><option>Operations</option><option>Sales</option></select>
+      </div>
+      <div class="form-group"><label>Kategori</label>
+        <select id="ops-category"><option>Peralatan</option><option>Perjalanan Dinas</option><option>Software/Lisensi</option><option>Training</option><option>Konsumsi</option><option>Lainnya</option></select>
+      </div>
+      <div class="form-group"><label>Nilai (Rp)</label><input id="ops-value" type="number" placeholder="0"></div>
+      <div class="form-group full"><label>Deskripsi Kebutuhan</label><textarea id="ops-desc" placeholder="Jelaskan kebutuhan operasional..."></textarea></div>
+      <div class="form-group"><label>Tanggal Dibutuhkan</label><input type="date" id="ops-date"></div>
+      <div class="form-group"><label>Status</label>
+        <select id="ops-status"><option>Menunggu</option><option>Disetujui</option><option>Ditolak</option><option>Selesai</option></select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-ops')">Batal</button>
+      <button class="btn btn-primary" onclick="saveOps()">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL REIMBURSE -->
+<div class="modal-overlay" id="modal-reimburse">
+  <div class="modal modal-lg">
+    <div class="modal-title" id="rmb-modal-title">Klaim Reimburse</div>
+    <div class="modal-sub">Ajukan klaim biaya reimburse</div>
+    <input type="hidden" id="rmb-edit-id">
+    <div class="form-grid">
+      <div class="form-group"><label>Nama Karyawan</label><input id="rmb-name" placeholder="Nama lengkap"></div>
+      <div class="form-group"><label>Departemen</label>
+        <select id="rmb-dept"><option>Engineering</option><option>Marketing</option><option>Finance</option><option>HR</option><option>Operations</option><option>Sales</option></select>
+      </div>
+      <div class="form-group"><label>Kategori</label>
+        <select id="rmb-category"><option>Transport</option><option>Makan</option><option>Akomodasi</option><option>Kesehatan</option><option>Lainnya</option></select>
+      </div>
+      <div class="form-group"><label>Nilai Klaim (Rp)</label><input id="rmb-value" type="number" placeholder="0"></div>
+      <div class="form-group"><label>Tanggal Pengeluaran</label><input type="date" id="rmb-date"></div>
+      <div class="form-group"><label>No. Bukti / Receipt</label><input id="rmb-receipt" placeholder="INV-0001 / No. Kwitansi"></div>
+      <div class="form-group full"><label>Keterangan</label><textarea id="rmb-desc" placeholder="Keterangan detail pengeluaran..."></textarea></div>
+      <div class="form-group full"><label>Status</label>
+        <select id="rmb-status"><option>Menunggu</option><option>Disetujui</option><option>Ditolak</option></select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-reimburse')">Batal</button>
+      <button class="btn btn-primary" onclick="saveReimburse()">Ajukan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PAYROLL -->
+<div class="modal-overlay" id="modal-payroll">
+  <div class="modal modal-lg">
+    <div class="modal-title" id="payroll-modal-title">Data Payroll</div>
+    <div class="modal-sub">Input data gaji karyawan</div>
+    <input type="hidden" id="pay-edit-id">
+    <div class="form-grid">
+      <div class="form-group"><label>Nama Karyawan</label><input id="pay-name" placeholder="Nama lengkap"></div>
+      <div class="form-group"><label>Departemen</label>
+        <select id="pay-dept"><option>Engineering</option><option>Marketing</option><option>Finance</option><option>HR</option><option>Operations</option><option>Sales</option></select>
+      </div>
+      <div class="form-group"><label>Gaji Pokok (Rp)</label><input id="pay-basic" type="number" placeholder="0"></div>
+      <div class="form-group"><label>Tunjangan (Rp)</label><input id="pay-allowance" type="number" placeholder="0"></div>
+      <div class="form-group"><label>Lembur (Rp)</label><input id="pay-overtime" type="number" placeholder="0"></div>
+      <div class="form-group"><label>Potongan (Rp)</label><input id="pay-deduction" type="number" placeholder="0"></div>
+      <div class="form-group"><label>Periode</label>
+        <select id="pay-period"><option value="2025-07">Juli 2025</option><option value="2025-06">Juni 2025</option><option value="2025-05">Mei 2025</option></select>
+      </div>
+      <div class="form-group"><label>Status</label>
+        <select id="pay-status"><option>Belum Dibayar</option><option>Proses</option><option>Dibayar</option></select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-payroll')">Batal</button>
+      <button class="btn btn-primary" onclick="savePayroll()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRM DELETE -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal confirm-modal">
+    <div class="confirm-icon">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="var(--red)" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+    </div>
+    <div class="modal-title">Hapus Data?</div>
+    <div class="modal-sub" id="confirm-message">Data ini akan dihapus secara permanen.</div>
+    <div class="form-actions" style="justify-content:center">
+      <button class="btn btn-ghost" onclick="closeModal('modal-confirm')">Batal</button>
+      <button class="btn btn-danger" id="confirm-delete-btn">Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ====== STATE ======
+let db = {
+  absen: [],
+  inout: [],
+  cuti: [],
+  ops: [],
+  reimburse: [],
+  payroll: []
+};
+let clockInterval;
+let todayCheckIn = null;
+let todayCheckOut = null;
+let pendingDelete = null;
+let editingModule = null;
+
+// ====== SEED DATA ======
+function seedData() {
+  const names = ['Andi Pratama','Budi Santoso','Citra Dewi','Dian Kusuma','Eko Wijaya','Fani Susanto','Gita Rahma','Hendra Putra'];
+  const depts = ['Engineering','Marketing','Finance','HR','Operations','Sales'];
+  const today = new Date();
+
+  // Absen
+  for(let i=0; i<18; i++){
+    const d = new Date(today); d.setDate(d.getDate()-i);
+    const name = names[i % names.length];
+    const inH = 7+Math.floor(Math.random()*2); const inM = Math.floor(Math.random()*60);
+    const outH = 17+Math.floor(Math.random()*2); const outM = Math.floor(Math.random()*60);
+    const statusArr = ['Hadir','Hadir','Hadir','Terlambat','Izin'];
+    db.absen.push({id:'abs-'+i, name, date:fmtDate(d), checkIn:pad(inH)+':'+pad(inM), checkOut:pad(outH)+':'+pad(outM), status:statusArr[i%statusArr.length]});
+  }
+
+  // InOut
+  for(let i=0; i<12; i++){
+    const d = new Date(today); d.setDate(d.getDate()-Math.floor(i/3));
+    const name = names[i % names.length];
+    const inH = 7+Math.floor(Math.random()*2); const inM = Math.floor(Math.random()*60);
+    const outH = i%4===0 ? null : 17+Math.floor(Math.random()*2);
+    const outM = Math.floor(Math.random()*60);
+    const locs = ['Kantor','WFH','Luar Kota'];
+    db.inout.push({id:'io-'+i, name, dept:depts[i%depts.length], date:fmtDate(d), checkIn:pad(inH)+':'+pad(inM), checkOut: outH ? pad(outH)+':'+pad(outM) : null, location:locs[i%3]});
+  }
+
+  // Cuti
+  const cutiTypes = ['Tahunan','Sakit','Darurat','Melahirkan'];
+  const cutiStatus = ['Menunggu','Disetujui','Disetujui','Ditolak','Menunggu'];
+  for(let i=0; i<8; i++){
+    const d = new Date(today); d.setDate(d.getDate()+i*3-8);
+    const end = new Date(d); end.setDate(end.getDate()+Math.ceil(Math.random()*5));
+    db.cuti.push({id:'cut-'+i, name:names[i%names.length], type:cutiTypes[i%4], start:fmtDate(d), end:fmtDate(end), reason:'Keperluan '+cutiTypes[i%4].toLowerCase(), status:cutiStatus[i%5]});
+  }
+
+  // Ops
+  const opsCategories = ['Peralatan','Perjalanan Dinas','Software/Lisensi','Training','Konsumsi'];
+  const opsStatus = ['Menunggu','Disetujui','Menunggu','Selesai','Ditolak'];
+  for(let i=0; i<8; i++){
+    const d = new Date(today); d.setDate(d.getDate()-i*4);
+    const val = (1+Math.floor(Math.random()*20))*500000;
+    db.ops.push({id:'ops-'+i, name:names[i%names.length], dept:depts[i%depts.length], category:opsCategories[i%5], desc:'Pengajuan '+opsCategories[i%5], value:val, date:fmtDate(d), status:opsStatus[i%5]});
+  }
+
+  // Reimburse
+  const rmbCats = ['Transport','Makan','Akomodasi','Kesehatan','Lainnya'];
+  const rmbStatus = ['Menunggu','Disetujui','Disetujui','Ditolak'];
+  for(let i=0; i<9; i++){
+    const d = new Date(today); d.setDate(d.getDate()-i*3);
+    const val = (1+Math.floor(Math.random()*10))*100000;
+    db.reimburse.push({id:'rmb-'+i, name:names[i%names.length], dept:depts[i%depts.length], category:rmbCats[i%5], desc:'Klaim '+rmbCats[i%5], value:val, date:fmtDate(d), receipt:'RCV-'+String(1000+i), status:rmbStatus[i%4]});
+  }
+
+  // Payroll
+  for(let i=0; i<8; i++){
+    const basic = (5+Math.floor(Math.random()*15))*1000000;
+    const allowance = (1+Math.floor(Math.random()*5))*500000;
+    const ot = Math.floor(Math.random()*3)*500000;
+    const deduction = Math.floor(basic*0.05);
+    const payStatus = i<4 ? 'Dibayar' : (i<6 ? 'Proses' : 'Belum Dibayar');
+    db.payroll.push({id:'pay-'+i, name:names[i], dept:depts[i%depts.length], basic, allowance, overtime:ot, deduction, period:'2025-07', status:payStatus});
+  }
+}
+
+function fmtDate(d){ return d.toISOString().split('T')[0]; }
+function pad(n){ return String(n).padStart(2,'0'); }
+
+// ====== HELPERS ======
+function calcDuration(inTime, outTime){
+  if(!inTime||!outTime) return '—';
+  const [ih,im]=inTime.split(':').map(Number);
+  const [oh,om]=outTime.split(':').map(Number);
+  const mins=(oh*60+om)-(ih*60+im);
+  if(mins<0) return '—';
+  return Math.floor(mins/60)+'j '+pad(mins%60)+'m';
+}
+
+function dateDiff(start, end){
+  const s=new Date(start), e=new Date(end);
+  const diff=Math.round((e-s)/(1000*60*60*24));
+  return diff+' hari';
+}
+
+function formatRp(val){
+  return 'Rp '+Number(val).toLocaleString('id-ID');
+}
+
+function statusBadge(s){
+  const map={
+    'Hadir':'badge-green','Terlambat':'badge-amber','Izin':'badge-blue','Sakit':'badge-pink','Alpha':'badge-red',
+    'Menunggu':'badge-amber','Disetujui':'badge-green','Ditolak':'badge-red','Selesai':'badge-teal',
+    'Proses':'badge-blue','Dibayar':'badge-green','Belum Dibayar':'badge-gray',
+    'In':'badge-green','Out':'badge-red'
+  };
+  return `<span class="badge ${map[s]||'badge-gray'}">${s}</span>`;
+}
+
+function avColor(name){
+  const colors = ['var(--accent)','var(--green)','var(--amber)','var(--blue)','var(--teal)','var(--pink)','var(--red)'];
+  const idx = (name.charCodeAt(0)||0) % colors.length;
+  return colors[idx];
+}
+function avInitials(name){ return name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
+function avHtml(name){ return `<div class="av" style="background:${avColor(name)};color:#0a0a0f">${avInitials(name)}</div>`; }
+
+// ====== CLOCK ======
+function startClock(){
+  function tick(){
+    const now = new Date();
+    document.getElementById('clock-display').textContent =
+      pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
+    document.getElementById('clock-date-display').textContent =
+      now.toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    if(todayCheckIn && !todayCheckOut){
+      const diff = Math.floor((now - todayCheckIn)/60000);
+      document.getElementById('absen-duration').textContent = Math.floor(diff/60)+'j '+pad(diff%60)+'m';
+    }
+  }
+  tick();
+  clockInterval = setInterval(tick,1000);
+}
+
+function checkIn(){
+  const btn = document.getElementById('btn-check-in');
+  if(btn.classList.contains('btn-disabled')) return;
+  todayCheckIn = new Date();
+  const t = pad(todayCheckIn.getHours())+':'+pad(todayCheckIn.getMinutes());
+  document.getElementById('absen-in-time').textContent = t;
+  document.getElementById('btn-check-in').classList.add('btn-disabled');
+  document.getElementById('btn-check-out').classList.remove('btn-disabled');
+  // Add to db
+  const rec = {id:'abs-live-'+Date.now(), name:'Admin HR', date:fmtDate(todayCheckIn), checkIn:t, checkOut:null, status:'Hadir'};
+  db.absen.unshift(rec);
+  renderAbsen();
+  toast('Check in berhasil! '+t,'success');
+  addActivity('Admin HR check in pukul '+t);
+  updateDashboard();
+}
+
+function checkOut(){
+  const btn = document.getElementById('btn-check-out');
+  if(btn.classList.contains('btn-disabled')) return;
+  todayCheckOut = new Date();
+  const t = pad(todayCheckOut.getHours())+':'+pad(todayCheckOut.getMinutes());
+  document.getElementById('absen-out-time').textContent = t;
+  document.getElementById('btn-check-out').classList.add('btn-disabled');
+  const dur = calcDuration(document.getElementById('absen-in-time').textContent, t);
+  document.getElementById('absen-duration').textContent = dur;
+  // Update db
+  const rec = db.absen.find(a=>a.name==='Admin HR'&&a.date===fmtDate(todayCheckOut));
+  if(rec){ rec.checkOut=t; }
+  renderAbsen();
+  toast('Check out berhasil! '+t+' ('+dur+')','success');
+  addActivity('Admin HR check out pukul '+t);
+}
+
+// ====== TOAST ======
+function toast(msg, type='success'){
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast '+(type==='success'?'success':'error');
+  t.innerHTML = `<div class="dot ${type==='success'?'dot-green':'dot-red'}"></div>${msg}`;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
+// ====== MODAL ======
+function openModal(id){
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+  editingModule=null;
+}
+
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); });
+});
+
+// ====== ACTIVITY ======
+let activities = [];
+function addActivity(msg){
+  const now = new Date();
+  activities.unshift({msg, time:pad(now.getHours())+':'+pad(now.getMinutes())});
+  if(activities.length>8) activities.pop();
+  renderActivity();
+}
+function renderActivity(){
+  const el = document.getElementById('activity-feed');
+  if(!activities.length){ el.innerHTML='<div class="empty"><div class="empty-text">Belum ada aktivitas</div></div>'; return; }
+  el.innerHTML = activities.map(a=>`
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <div class="dot dot-green" style="margin-top:5px;flex-shrink:0"></div>
+      <div>
+        <div style="font-size:13px">${a.msg}</div>
+        <div style="font-size:11px;color:var(--text3)">${a.time}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ====== FILTER ======
+function filterTable(tableId, val){
+  const rows = document.querySelectorAll('#'+tableId+' tbody tr');
+  val = val.toLowerCase();
+  rows.forEach(r=>{ r.style.display = r.textContent.toLowerCase().includes(val)?'':'none'; });
+}
+
+// ====== CONFIRM DELETE ======
+function confirmDelete(msg, cb){
+  document.getElementById('confirm-message').textContent = msg;
+  document.getElementById('confirm-delete-btn').onclick = ()=>{ closeModal('modal-confirm'); cb(); };
+  openModal('modal-confirm');
+}
+
+// ====== DASHBOARD ======
+function updateDashboard(){
+  const uniqueEmp = new Set([...db.absen.map(a=>a.name),...db.payroll.map(p=>p.name)]).size;
+  document.getElementById('stat-emp').textContent = uniqueEmp;
+  const todayStr = fmtDate(new Date());
+  const todayAbsen = db.absen.filter(a=>a.date===todayStr&&a.status==='Hadir').length;
+  document.getElementById('stat-hadir').textContent = todayAbsen;
+  document.getElementById('stat-hadir-pct').textContent = todayAbsen+' hadir dari '+uniqueEmp+' karyawan';
+  const activeCuti = db.cuti.filter(c=>c.status==='Menunggu'||c.status==='Disetujui').length;
+  document.getElementById('stat-cuti').textContent = activeCuti;
+  const totalOps = db.ops.length;
+  document.getElementById('stat-ops').textContent = totalOps;
+  const pendingOps = db.ops.filter(o=>o.status==='Menunggu').length;
+  document.getElementById('stat-ops-sub').textContent = pendingOps+' menunggu persetujuan';
+  renderAbsenChart();
+}
+
+function renderAbsenChart(){
+  const chart = document.getElementById('absen-chart');
+  const days = [];
+  const today = new Date();
+  for(let i=6;i>=0;i--){
+    const d = new Date(today); d.setDate(d.getDate()-i);
+    const str = fmtDate(d);
+    const hadir = db.absen.filter(a=>a.date===str&&a.status==='Hadir').length;
+    const absen = db.absen.filter(a=>a.date===str&&a.status!=='Hadir').length;
+    days.push({label:['Min','Sen','Sel','Rab','Kam','Jum','Sab'][d.getDay()], hadir, absen});
+  }
+  const maxVal = Math.max(...days.map(d=>d.hadir+d.absen),1);
+  chart.innerHTML = days.map(d=>`
+    <div class="bar-wrap">
+      <div class="bar-val">${d.hadir+d.absen||''}</div>
+      <div style="width:100%;display:flex;flex-direction:column;gap:1px;flex:1;justify-content:flex-end">
+        ${d.absen?`<div class="bar" style="height:${Math.round((d.absen/maxVal)*80)}px;background:var(--red);opacity:.6"></div>`:''}
+        ${d.hadir?`<div class="bar" style="height:${Math.round((d.hadir/maxVal)*80)}px;background:var(--green)"></div>`:''}
+      </div>
+      <div class="bar-lbl">${d.label}</div>
+    </div>
+  `).join('');
+}
+
+// ====== ABSENSI ======
+function renderAbsen(){
+  const tbody = document.getElementById('absen-tbody');
+  if(!db.absen.length){ tbody.innerHTML=`<tr><td colspan="7"><div class="empty"><div class="empty-text">Belum ada data absensi</div></div></td></tr>`; return; }
+  tbody.innerHTML = db.absen.map(a=>`
+    <tr data-id="${a.id}">
+      <td><span style="font-family:'DM Mono',monospace;font-size:12.5px">${a.date}</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px">${avHtml(a.name)}<span>${a.name}</span></div></td>
+      <td><span style="color:var(--green);font-family:'DM Mono',monospace">${a.checkIn||'—'}</span></td>
+      <td><span style="color:var(--red);font-family:'DM Mono',monospace">${a.checkOut||'—'}</span></td>
+      <td>${calcDuration(a.checkIn,a.checkOut)}</td>
+      <td>${statusBadge(a.status)}</td>
+      <td><div class="actions">
+        <button class="btn btn-ghost btn-sm" onclick="editAbsen('${a.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAbsen('${a.id}')">Hapus</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function editAbsen(id){
+  const rec = db.absen.find(a=>a.id===id);
+  if(!rec) return;
+  document.getElementById('absen-edit-id').value = id;
+  document.getElementById('absen-edit-name').value = rec.name;
+  document.getElementById('absen-edit-date').value = rec.date;
+  document.getElementById('absen-edit-in').value = rec.checkIn||'';
+  document.getElementById('absen-edit-out').value = rec.checkOut||'';
+  document.getElementById('absen-edit-status').value = rec.status;
+  document.getElementById('absen-modal-title').textContent = 'Edit Absensi: '+rec.name;
+  openModal('modal-absen-edit');
+}
+
+function saveAbsenEdit(){
+  const id = document.getElementById('absen-edit-id').value;
+  const rec = db.absen.find(a=>a.id===id);
+  if(!rec) return;
+  rec.name = document.getElementById('absen-edit-name').value||rec.name;
+  rec.date = document.getElementById('absen-edit-date').value||rec.date;
+  rec.checkIn = document.getElementById('absen-edit-in').value||rec.checkIn;
+  rec.checkOut = document.getElementById('absen-edit-out').value||rec.checkOut;
+  rec.status = document.getElementById('absen-edit-status').value;
+  closeModal('modal-absen-edit');
+  renderAbsen(); updateDashboard();
+  toast('Data absensi berhasil diperbarui');
+  addActivity('Edit absensi: '+rec.name+' ('+rec.date+')');
+}
+
+function deleteAbsen(id){
+  confirmDelete('Data absensi ini akan dihapus permanen.', ()=>{
+    db.absen = db.absen.filter(a=>a.id!==id);
+    renderAbsen(); updateDashboard();
+    toast('Data absensi dihapus','error');
+  });
+}
+
+function filterAbsenMonth(val){
+  const rows = document.querySelectorAll('#absen-table tbody tr');
+  rows.forEach(r=>{ r.style.display = (!val||r.querySelector('td span')?.textContent?.startsWith(val))?'':'none'; });
+}
+
+// ====== IN OUT ======
+function renderInOut(){
+  const tbody = document.getElementById('inout-tbody');
+  if(!db.inout.length){ tbody.innerHTML=`<tr><td colspan="8"><div class="empty"><div class="empty-text">Belum ada log</div></div></td></tr>`; return; }
+  const todayStr = fmtDate(new Date());
+  const todayIn = db.inout.filter(a=>a.date===todayStr).length;
+  const todayOut = db.inout.filter(a=>a.date===todayStr&&a.checkOut).length;
+  document.getElementById('io-in-count').textContent = todayIn;
+  document.getElementById('io-out-count').textContent = todayOut;
+  document.getElementById('io-still-count').textContent = todayIn - todayOut;
+  tbody.innerHTML = db.inout.map(a=>`
+    <tr>
+      <td><span style="font-family:'DM Mono',monospace;font-size:12.5px">${a.date}</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px">${avHtml(a.name)}<span>${a.name}</span></div></td>
+      <td><span class="badge badge-gray">${a.dept}</span></td>
+      <td><span style="color:var(--green);font-family:'DM Mono',monospace">${a.checkIn||'—'}</span></td>
+      <td><span style="color:var(--red);font-family:'DM Mono',monospace">${a.checkOut||'—'}</span></td>
+      <td>${a.location}</td>
+      <td>${statusBadge(a.checkOut?'Hadir':'Terlambat')}</td>
+      <td><div class="actions">
+        <button class="btn btn-ghost btn-sm" onclick="editInOut('${a.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteInOut('${a.id}')">Hapus</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function editInOut(id){
+  const rec = db.inout.find(a=>a.id===id);
+  if(!rec) return;
+  document.getElementById('inout-edit-id').value = id;
+  document.getElementById('io-name').value = rec.name;
+  document.getElementById('io-dept').value = rec.dept;
+  document.getElementById('io-date').value = rec.date;
+  document.getElementById('io-location').value = rec.location;
+  document.getElementById('io-in').value = rec.checkIn||'';
+  document.getElementById('io-out').value = rec.checkOut||'';
+  document.getElementById('inout-modal-title').textContent = 'Edit Log: '+rec.name;
+  openModal('modal-inout');
+}
+
+function saveInOut(){
+  const id = document.getElementById('inout-edit-id').value;
+  const name = document.getElementById('io-name').value;
+  const dept = document.getElementById('io-dept').value;
+  const date = document.getElementById('io-date').value;
+  const location = document.getElementById('io-location').value;
+  const checkIn = document.getElementById('io-in').value;
+  const checkOut = document.getElementById('io-out').value;
+  if(!name||!date||!checkIn){ toast('Nama, tanggal, dan check in wajib diisi','error'); return; }
+  if(id){
+    const rec = db.inout.find(a=>a.id===id);
+    if(rec){ Object.assign(rec,{name,dept,date,location,checkIn,checkOut:checkOut||null}); }
+  } else {
+    db.inout.unshift({id:'io-'+Date.now(), name, dept, date, location, checkIn, checkOut:checkOut||null});
+    addActivity(name+' log in pukul '+checkIn);
+  }
+  document.getElementById('inout-edit-id').value='';
+  closeModal('modal-inout');
+  renderInOut(); updateDashboard();
+  toast(id?'Log diperbarui':'Log ditambahkan');
+}
+
+function deleteInOut(id){
+  confirmDelete('Log in/out ini akan dihapus.', ()=>{
+    db.inout = db.inout.filter(a=>a.id!==id);
+    renderInOut(); updateDashboard();
+    toast('Log dihapus','error');
+  });
+}
+
+// ====== CUTI ======
+function renderCuti(){
+  const tbody = document.getElementById('cuti-tbody');
+  document.getElementById('cuti-pending').textContent = db.cuti.filter(c=>c.status==='Menunggu').length;
+  document.getElementById('cuti-approved').textContent = db.cuti.filter(c=>c.status==='Disetujui').length;
+  document.getElementById('cuti-rejected').textContent = db.cuti.filter(c=>c.status==='Ditolak').length;
+  if(!db.cuti.length){ tbody.innerHTML=`<tr><td colspan="8"><div class="empty"><div class="empty-text">Belum ada pengajuan cuti</div></div></td></tr>`; return; }
+  tbody.innerHTML = db.cuti.map(c=>`
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:8px">${avHtml(c.name)}<span>${c.name}</span></div></td>
+      <td><span class="badge badge-purple">${c.type}</span></td>
+      <td><span style="font-family:'DM Mono',monospace;font-size:12px">${c.start}</span></td>
+      <td><span style="font-family:'DM Mono',monospace;font-size:12px">${c.end}</span></td>
+      <td>${dateDiff(c.start,c.end)}</td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.reason}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td><div class="actions">
+        <button class="btn btn-ghost btn-sm" onclick="editCuti('${c.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCuti('${c.id}')">Hapus</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function editCuti(id){
+  const rec = db.cuti.find(c=>c.id===id);
+  if(!rec) return;
+  document.getElementById('cuti-edit-id').value = id;
+  document.getElementById('cuti-name').value = rec.name;
+  document.getElementById('cuti-type').value = rec.type;
+  document.getElementById('cuti-start').value = rec.start;
+  document.getElementById('cuti-end').value = rec.end;
+  document.getElementById('cuti-reason').value = rec.reason;
+  document.getElementById('cuti-status').value = rec.status;
+  document.getElementById('cuti-modal-title').textContent = 'Edit Cuti: '+rec.name;
+  openModal('modal-cuti');
+}
+
+function saveCuti(){
+  const id = document.getElementById('cuti-edit-id').value;
+  const name = document.getElementById('cuti-name').value;
+  const type = document.getElementById('cuti-type').value;
+  const start = document.getElementById('cuti-start').value;
+  const end = document.getElementById('cuti-end').value;
+  const reason = document.getElementById('cuti-reason').value;
+  const status = document.getElementById('cuti-status').value;
+  if(!name||!start||!end){ toast('Nama dan tanggal wajib diisi','error'); return; }
+  if(id){
+    const rec = db.cuti.find(c=>c.id===id);
+    if(rec){ Object.assign(rec,{name,type,start,end,reason,status}); }
+  } else {
+    db.cuti.unshift({id:'cut-'+Date.now(), name, type, start, end, reason, status});
+    addActivity(name+' ajukan cuti '+type+' ('+start+')');
+  }
+  document.getElementById('cuti-edit-id').value='';
+  document.getElementById('cuti-modal-title').textContent='Pengajuan Cuti';
+  closeModal('modal-cuti');
+  renderCuti(); updateDashboard();
+  toast(id?'Data cuti diperbarui':'Cuti berhasil diajukan');
+}
+
+function deleteCuti(id){
+  confirmDelete('Pengajuan cuti ini akan dihapus.', ()=>{
+    db.cuti = db.cuti.filter(c=>c.id!==id);
+    renderCuti(); updateDashboard();
+    toast('Cuti dihapus','error');
+  });
+}
+
+function filterCutiStatus(val){
+  document.querySelectorAll('#cuti-table tbody tr').forEach(r=>{
+    r.style.display = (!val||r.textContent.includes(val))?'':'none';
+  });
+}
+function filterCutiType(val){
+  document.querySelectorAll('#cuti-table tbody tr').forEach(r=>{
+    r.style.display = (!val||r.textContent.includes(val))?'':'none';
+  });
+}
+
+// ====== OPS ======
+let opsCounter = 100;
+function renderOps(){
+  const tbody = document.getElementById('ops-tbody');
+  document.getElementById('ops-total').textContent = db.ops.length;
+  document.getElementById('ops-pending').textContent = db.ops.filter(o=>o.status==='Menunggu').length;
+  document.getElementById('ops-approved').textContent = db.ops.filter(o=>o.status==='Disetujui'||o.status==='Selesai').length;
+  const totalVal = db.ops.reduce((s,o)=>s+Number(o.value),0);
+  document.getElementById('ops-value').textContent = (totalVal/1000000).toFixed(1)+'jt';
+  if(!db.ops.length){ tbody.innerHTML=`<tr><td colspan="8"><div class="empty"><div class="empty-text">Belum ada pengajuan</div></div></td></tr>`; return; }
+  tbody.innerHTML = db.ops.map((o,i)=>`
+    <tr>
+      <td><span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)">#OPS-${String(100+i).padStart(4,'0')}</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px">${avHtml(o.name)}<div><div style="font-size:13px">${o.name}</div><div style="font-size:11px;color:var(--text3)">${o.dept}</div></div></div></td>
+      <td><span class="badge badge-blue">${o.category}</span></td>
+      <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.desc}</td>
+      <td><span style="font-weight:600;color:var(--amber)">${formatRp(o.value)}</span></td>
+      <td><span style="font-family:'DM Mono',monospace;font-size:12px">${o.date}</span></td>
+      <td>${statusBadge(o.status)}</td>
+      <td><div class="actions">
+        <button class="btn btn-ghost btn-sm" onclick="editOps('${o.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteOps('${o.id}')">Hapus</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function editOps(id){
+  const rec = db.ops.find(o=>o.id===id);
+  if(!rec) return;
+  document.getElementById('ops-edit-id').value = id;
+  document.getElementById('ops-name').value = rec.name;
+  document.getElementById('ops-dept').value = rec.dept;
+  document.getElementById('ops-category').value = rec.category;
+  document.getElementById('ops-value').value = rec.value;
+  document.getElementById('ops-desc').value = rec.desc;
+  document.getElementById('ops-date').value = rec.date;
+  document.getElementById('ops-status').value = rec.status;
+  document.getElementById('ops-modal-title').textContent = 'Edit Pengajuan Ops';
+  openModal('modal-ops');
+}
+
+function saveOps(){
+  const id = document.getElementById('ops-edit-id').value;
+  const name = document.getElementById('ops-name').value;
+  const dept = document.getElementById('ops-dept').value;
+  const category = document.getElementById('ops-category').value;
+  const value = document.getElementById('ops-value').value;
+  const desc = document.getElementById('ops-desc').value;
+  const date = document.getElementById('ops-date').value;
+  const status = document.getElementById('ops-status').value;
+  if(!name||!value||!date){ toast('Nama, nilai, dan tanggal wajib diisi','error'); return; }
+  if(id){
+    const rec = db.ops.find(o=>o.id===id);
+    if(rec){ Object.assign(rec,{name,dept,category,value:Number(value),desc,date,status}); }
+  } else {
+    db.ops.unshift({id:'ops-'+Date.now(), name, dept, category, value:Number(value), desc, date, status});
+    addActivity(name+' buat pengajuan ops: '+category);
+  }
+  document.getElementById('ops-edit-id').value='';
+  document.getElementById('ops-modal-title').textContent='Pengajuan Operasional';
+  closeModal('modal-ops');
+  renderOps(); updateDashboard();
+  toast(id?'Pengajuan diperbarui':'Pengajuan berhasil dibuat');
+}
+
+function deleteOps(id){
+  confirmDelete('Pengajuan operasional ini akan dihapus.', ()=>{
+    db.ops = db.ops.filter(o=>o.id!==id);
+    renderOps(); updateDashboard();
+    toast('Pengajuan dihapus','error');
+  });
+}
+
+// ====== REIMBURSE ======
+function renderReimburse(){
+  const tbody = document.getElementById('rmb-tbody');
+  document.getElementById('rmb-total').textContent = db.reimburse.length;
+  document.getElementById('rmb-pending').textContent = db.reimburse.filter(r=>r.status==='Menunggu').length;
+  document.getElementById('rmb-approved').textContent = db.reimburse.filter(r=>r.status==='Disetujui').length;
+  const totalVal = db.reimburse.reduce((s,r)=>s+Number(r.value),0);
+  document.getElementById('rmb-value').textContent = (totalVal/1000000).toFixed(1)+'jt';
+  if(!db.reimburse.length){ tbody.innerHTML=`<tr><td colspan="8"><div class="empty"><div class="empty-text">Belum ada klaim reimburse</div></div></td></tr>`; return; }
+  tbody.innerHTML = db.reimburse.map((r,i)=>`
+    <tr>
+      <td><span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)">${r.receipt}</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px">${avHtml(r.name)}<div><div style="font-size:13px">${r.name}</div><div style="font-size:11px;color:var(--text3)">${r.dept}</div></div></div></td>
+      <td><span class="badge badge-teal">${r.category}</span></td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.desc}</td>
+      <td><span style="font-weight:600;color:var(--teal)">${formatRp(r.value)}</span></td>
+      <td><span style="font-family:'DM Mono',monospace;font-size:12px">${r.date}</span></td>
+      <td>${statusBadge(r.status)}</td>
+      <td><div class="actions">
+        <button class="btn btn-ghost btn-sm" onclick="editReimburse('${r.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteReimburse('${r.id}')">Hapus</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function editReimburse(id){
+  const rec = db.reimburse.find(r=>r.id===id);
+  if(!rec) return;
+  document.getElementById('rmb-edit-id').value = id;
+  document.getElementById('rmb-name').value = rec.name;
+  document.getElementById('rmb-dept').value = rec.dept;
+  document.getElementById('rmb-category').value = rec.category;
+  document.getElementById('rmb-value').value = rec.value;
+  document.getElementById('rmb-date').value = rec.date;
+  document.getElementById('rmb-receipt').value = rec.receipt;
+  document.getElementById('rmb-desc').value = rec.desc;
+  document.getElementById('rmb-status').value = rec.status;
+  document.getElementById('rmb-modal-title').textContent = 'Edit Klaim: '+rec.name;
+  openModal('modal-reimburse');
+}
+
+function saveReimburse(){
+  const id = document.getElementById('rmb-edit-id').value;
+  const name = document.getElementById('rmb-name').value;
+  const dept = document.getElementById('rmb-dept').value;
+  const category = document.getElementById('rmb-category').value;
+  const value = document.getElementById('rmb-value').value;
+  const date = document.getElementById('rmb-date').value;
+  const receipt = document.getElementById('rmb-receipt').value||'RCV-'+Date.now();
+  const desc = document.getElementById('rmb-desc').value;
+  const status = document.getElementById('rmb-status').value;
+  if(!name||!value||!date){ toast('Nama, nilai, dan tanggal wajib diisi','error'); return; }
+  if(id){
+    const rec = db.reimburse.find(r=>r.id===id);
+    if(rec){ Object.assign(rec,{name,dept,category,value:Number(value),date,receipt,desc,status}); }
+  } else {
+    db.reimburse.unshift({id:'rmb-'+Date.now(), name, dept, category, value:Number(value), date, receipt, desc, status});
+    addActivity(name+' ajukan reimburse '+category+' '+formatRp(value));
+  }
+  document.getElementById('rmb-edit-id').value='';
+  document.getElementById('rmb-modal-title').textContent='Klaim Reimburse';
+  closeModal('modal-reimburse');
+  renderReimburse(); updateDashboard();
+  toast(id?'Klaim diperbarui':'Klaim berhasil diajukan');
+}
+
+function deleteReimburse(id){
+  confirmDelete('Klaim reimburse ini akan dihapus.', ()=>{
+    db.reimburse = db.reimburse.filter(r=>r.id!==id);
+    renderReimburse(); updateDashboard();
+    toast('Klaim dihapus','error');
+  });
+}
+
+function filterRmbStatus(val){
+  document.querySelectorAll('#rmb-table tbody tr').forEach(r=>{
+    r.style.display = (!val||r.textContent.includes(val))?'':'none';
+  });
+}
+function filterRmbCategory(val){
+  document.querySelectorAll('#rmb-table tbody tr').forEach(r=>{
+    r.style.display = (!val||r.textContent.includes(val))?'':'none';
+  });
+}
+
+// ====== PAYROLL ======
+function renderPayroll(){
+  const tbody = document.getElementById('payroll-tbody');
+  const totalBruto = db.payroll.reduce((s,p)=>s+p.basic+p.allowance+p.overtime,0);
+  const totalDeduct = db.payroll.reduce((s,p)=>s+p.deduction,0);
+  document.getElementById('pay-bruto').textContent = formatRp(totalBruto);
+  document.getElementById('pay-potongan').textContent = formatRp(totalDeduct);
+  document.getElementById('pay-neto').textContent = formatRp(totalBruto-totalDeduct);
+  if(!db.payroll.length){ tbody.innerHTML=`<tr><td colspan="9"><div class="empty"><div class="empty-text">Belum ada data payroll</div></div></td></tr>`; return; }
+  tbody.innerHTML = db.payroll.map(p=>{
+    const neto = p.basic+p.allowance+p.overtime-p.deduction;
+    return `
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:8px">${avHtml(p.name)}<span>${p.name}</span></div></td>
+      <td><span class="badge badge-gray">${p.dept}</span></td>
+      <td style="font-family:'DM Mono',monospace;font-size:12.5px">${formatRp(p.basic)}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12.5px;color:var(--green)">${formatRp(p.allowance)}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12.5px;color:var(--blue)">${formatRp(p.overtime)}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12.5px;color:var(--red)">${formatRp(p.deduction)}</td>
+      <td style="font-family:'DM Mono',monospace;font-weight:600;font-size:13px">${formatRp(neto)}</td>
+      <td>${statusBadge(p.status)}</td>
+      <td><div class="actions">
+        <button class="btn btn-ghost btn-sm" onclick="editPayroll('${p.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deletePayroll('${p.id}')">Hapus</button>
+      </div></td>
+    </tr>
+  `}).join('');
+}
+
+function editPayroll(id){
+  const rec = db.payroll.find(p=>p.id===id);
+  if(!rec) return;
+  document.getElementById('pay-edit-id').value = id;
+  document.getElementById('pay-name').value = rec.name;
+  document.getElementById('pay-dept').value = rec.dept;
+  document.getElementById('pay-basic').value = rec.basic;
+  document.getElementById('pay-allowance').value = rec.allowance;
+  document.getElementById('pay-overtime').value = rec.overtime;
+  document.getElementById('pay-deduction').value = rec.deduction;
+  document.getElementById('pay-period').value = rec.period;
+  document.getElementById('pay-status').value = rec.status;
+  document.getElementById('payroll-modal-title').textContent = 'Edit Payroll: '+rec.name;
+  openModal('modal-payroll');
+}
+
+function savePayroll(){
+  const id = document.getElementById('pay-edit-id').value;
+  const name = document.getElementById('pay-name').value;
+  const dept = document.getElementById('pay-dept').value;
+  const basic = Number(document.getElementById('pay-basic').value)||0;
+  const allowance = Number(document.getElementById('pay-allowance').value)||0;
+  const overtime = Number(document.getElementById('pay-overtime').value)||0;
+  const deduction = Number(document.getElementById('pay-deduction').value)||0;
+  const period = document.getElementById('pay-period').value;
+  const status = document.getElementById('pay-status').value;
+  if(!name||!basic){ toast('Nama dan gaji pokok wajib diisi','error'); return; }
+  if(id){
+    const rec = db.payroll.find(p=>p.id===id);
+    if(rec){ Object.assign(rec,{name,dept,basic,allowance,overtime,deduction,period,status}); }
+  } else {
+    db.payroll.push({id:'pay-'+Date.now(), name, dept, basic, allowance, overtime, deduction, period, status});
+    addActivity('Tambah payroll: '+name+' ('+period+')');
+  }
+  document.getElementById('pay-edit-id').value='';
+  document.getElementById('payroll-modal-title').textContent='Data Payroll';
+  closeModal('modal-payroll');
+  renderPayroll(); updateDashboard();
+  toast(id?'Payroll diperbarui':'Data payroll ditambahkan');
+}
+
+function deletePayroll(id){
+  confirmDelete('Data payroll ini akan dihapus.', ()=>{
+    db.payroll = db.payroll.filter(p=>p.id!==id);
+    renderPayroll(); updateDashboard();
+    toast('Payroll dihapus','error');
+  });
+}
+
+function filterPayrollMonth(val){
+  document.querySelectorAll('#payroll-table tbody tr').forEach(r=>{
+    r.style.display = (!val||true)?'':'none'; // show all since period in data
+  });
+}
+
+// ====== NAV ======
+const pageTitles = {
+  dashboard:'Dashboard',
+  absen:'Absensi',
+  inout:'In & Out',
+  cuti:'Cuti',
+  ops:'Pengajuan Operasional',
+  reimburse:'Reimburse',
+  payroll:'Payroll'
+};
+function navigateTo(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelector(`[data-page="${page}"]`).classList.add('active');
+  document.getElementById('page-title').textContent = pageTitles[page]||page;
+  if(page==='absen') renderAbsen();
+  if(page==='inout') renderInOut();
+  if(page==='cuti') renderCuti();
+  if(page==='ops') renderOps();
+  if(page==='reimburse') renderReimburse();
+  if(page==='payroll') renderPayroll();
+}
+
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click',()=>{ navigateTo(item.dataset.page); });
+});
+
+// ====== INIT ======
+function init(){
+  seedData();
+  startClock();
+  updateDashboard();
+  renderActivity();
+  // seed activities
+  activities = [
+    {msg:'Sistem HR berhasil dimuat','time': pad(new Date().getHours())+':'+pad(new Date().getMinutes())},
+    {msg:'Data karyawan diperbarui', time:'08:30'},
+    {msg:'Andi Pratama check in pukul 08:12', time:'08:12'},
+    {msg:'Cuti Budi Santoso disetujui', time:'07:55'},
+  ];
+  renderActivity();
+}
+init();
+</script>
+</body>
+</html>
